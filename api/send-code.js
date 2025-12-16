@@ -5,6 +5,9 @@ const apiKey = process.env.TELESIGN_API_KEY;
 
 const client = new TeleSignSDK(customerId, apiKey);
 
+// 🧠 تخزين مؤقت
+global.codes = global.codes || {};
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -18,13 +21,15 @@ module.exports = async (req, res) => {
 
   const code = Math.floor(100000 + Math.random() * 900000).toString();
 
+  // ⏱️ صلاحية 5 دقائق
+  global.codes[phone] = {
+    code,
+    expiresAt: Date.now() + 5 * 60 * 1000
+  };
+
   try {
     if (channel === "voice") {
-      await client.voice.call(
-        phone,
-        code,
-        "en-US"
-      );
+      await client.voice.call(phone, code, "en-US");
     } else {
       await client.sms.message(
         phone,
@@ -35,8 +40,7 @@ module.exports = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Verification code sent",
-      code // مؤقت للاختبار
+      message: "Verification code sent"
     });
   } catch (err) {
     return res.status(500).json({
