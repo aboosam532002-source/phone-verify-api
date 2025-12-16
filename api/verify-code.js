@@ -1,4 +1,3 @@
-// 🧠 نفس التخزين
 global.codes = global.codes || {};
 
 module.exports = (req, res) => {
@@ -6,7 +5,7 @@ module.exports = (req, res) => {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { phone, code } = req.body;
+  const { phone, code } = req.body || {};
 
   if (!phone || !code) {
     return res.status(400).json({
@@ -20,7 +19,7 @@ module.exports = (req, res) => {
   if (!record) {
     return res.status(400).json({
       success: false,
-      message: "No code found for this phone"
+      message: "No code found"
     });
   }
 
@@ -39,11 +38,10 @@ module.exports = (req, res) => {
     });
   }
 
-  // ✅ نجاح
   delete global.codes[phone];
 
-  return res.json({
+  return res.status(200).json({
     success: true,
-    message: "Phone verified successfully"
+    message: "Verified"
   });
 };
