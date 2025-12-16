@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
       await client.sms.message(
         phone,
         `Your verification code is ${code}`,
-        "ARN"
+        "OTP"
       );
     }
 
