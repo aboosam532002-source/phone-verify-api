@@ -4,7 +4,9 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("API is running");
+  res.json({ status: "API is running" });
 });
 
-module.exports = app;
+module.exports = (req, res) => {
+  return app(req, res);
+};
